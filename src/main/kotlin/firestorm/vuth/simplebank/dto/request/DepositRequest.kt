@@ -1,0 +1,14 @@
+package firestorm.vuth.simplebank.dto.request
+
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotNull
+import java.math.BigDecimal
+
+data class DepositRequest(
+    @field:NotBlank
+    @field:NotNull
+    val amount: BigDecimal,
+
+    @field:NotBlank
+    val currency: String,
+)
