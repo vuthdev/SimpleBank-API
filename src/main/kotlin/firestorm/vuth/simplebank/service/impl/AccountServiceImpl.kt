@@ -1,6 +1,6 @@
 package firestorm.vuth.simplebank.service.impl
 
-import firestorm.vuth.simplebank.Mapper.toResponse
+import firestorm.vuth.simplebank.mapper.toResponse
 import firestorm.vuth.simplebank.dto.request.AccountRequest
 import firestorm.vuth.simplebank.dto.response.AccountDetailResponse
 import firestorm.vuth.simplebank.exception.BusinessRuleException

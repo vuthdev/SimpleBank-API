@@ -1,8 +1,9 @@
 package firestorm.vuth.simplebank.service.impl
 
-import firestorm.vuth.simplebank.Mapper.toResponse
+import firestorm.vuth.simplebank.mapper.toResponse
 import firestorm.vuth.simplebank.dto.response.TransactionResponse
 import firestorm.vuth.simplebank.exception.ResourceNotFoundException
+import firestorm.vuth.simplebank.mapper.toResponseOrNull
 import firestorm.vuth.simplebank.model.Account
 import firestorm.vuth.simplebank.model.Enum.Currency
 import firestorm.vuth.simplebank.model.Enum.TransactionStatus
@@ -53,6 +54,6 @@ class BankTransactionServiceImpl(
         if (accounts.isEmpty()) return emptyList()
 
         val transactions: Page<Transaction> = transactionRepo.findBySenderAccountInOrReceiverAccountIn(accounts, accounts, finalPage)
-        return transactions.content.map { it.toResponse() }
+        return transactions.content.toResponse()
     }
 }

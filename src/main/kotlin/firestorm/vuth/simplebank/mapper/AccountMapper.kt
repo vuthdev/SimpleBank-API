@@ -1,4 +1,4 @@
-package firestorm.vuth.simplebank.Mapper
+package firestorm.vuth.simplebank.mapper
 
 import firestorm.vuth.simplebank.dto.response.AccountDetailResponse
 import firestorm.vuth.simplebank.model.Account
