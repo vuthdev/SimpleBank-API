@@ -16,8 +16,6 @@ import firestorm.vuth.simplebank.repository.UserRepo
 import firestorm.vuth.simplebank.service.BankTransactionService
 import firestorm.vuth.simplebank.service.TransferService
 import firestorm.vuth.simplebank.utils.BankConfig
-import firestorm.vuth.simplebank.utils.credit
-import firestorm.vuth.simplebank.utils.debit
 import jakarta.transaction.Transactional
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
@@ -32,8 +30,6 @@ class TransferServiceImpl(
 
     @Transactional
     override fun withdraw(accountNumber: Long, request: WithdrawRequest): TransactionResponse {
-        val user = userRepo.findByEmail(SecurityContextHolder.getContext().authentication?.name)
-            ?: throw ResourceNotFoundException("User not found")
         val account = accountRepo.findByAccountNumber(accountNumber)
             ?: throw ResourceNotFoundException("Account number ${accountNumber} not found")
 
@@ -57,8 +53,6 @@ class TransferServiceImpl(
 
     @Transactional
     override fun deposit(accountNumber: Long, request: DepositRequest): TransactionResponse {
-        val user = userRepo.findByEmail(SecurityContextHolder.getContext().authentication?.name)
-            ?: throw ResourceNotFoundException("User not found")
         val account = accountRepo.findByAccountNumber(accountNumber)
             ?: throw ResourceNotFoundException("Account number ${accountNumber} not found")
 

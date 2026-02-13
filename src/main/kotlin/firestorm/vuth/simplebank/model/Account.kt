@@ -1,7 +1,6 @@
 package firestorm.vuth.simplebank.model
 
 import firestorm.vuth.simplebank.model.Enum.Currency
-import firestorm.vuth.simplebank.utils.AccountNumberGenerator
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -36,4 +35,12 @@ class Account(
 
     @Column(name = "created_at", nullable = false)
     var createdAt: LocalDateTime = LocalDateTime.now(),
-)
+) {
+    fun debit(amount: BigDecimal) {
+        this.balance = this.balance.subtract(amount)
+    }
+
+    fun credit(amount: BigDecimal) {
+        this.balance = this.balance.add(amount)
+    }
+}
