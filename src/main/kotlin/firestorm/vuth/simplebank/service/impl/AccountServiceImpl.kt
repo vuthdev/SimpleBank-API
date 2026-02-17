@@ -21,7 +21,7 @@ class AccountServiceImpl(
     override fun createAccount(request: AccountRequest): AccountDetailResponse {
         val user = userRepo.findById(request.userId).orElseThrow { ResourceNotFoundException("User does not exist") }
 
-        if (user.bankAccounts.count() <= BankConfig.MIN_ACCOUNT) throw BusinessRuleException("Account does not belong to user")
+        if (user.bankAccounts.size <= BankConfig.MIN_ACCOUNT) throw BusinessRuleException("Account does not belong to user")
 
         val account = Account(
             user = user,
@@ -31,16 +31,9 @@ class AccountServiceImpl(
         return accountRepo.save(account).toResponse()
     }
 
-    override fun deleteAccount(
-        accountNumber: Long,
-        email: String
-    ) {
-        val user = userRepo.findByEmail(email)
-            ?: throw ResourceNotFoundException("User does not exist")
+    override fun deleteAccount(accountNumber: Long) {
         val account = accountRepo.findByAccountNumberForUpdate(accountNumber)
             ?: throw ResourceNotFoundException("Account does not exist")
-
-        if (account.user?.id != user.id) throw BusinessRuleException("Account does not belong to user")
 
         return accountRepo.deleteById(account.id!!)
     }
