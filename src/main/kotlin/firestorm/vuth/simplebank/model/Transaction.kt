@@ -23,7 +23,7 @@ class Transaction(
     val id: UUID? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sender_account_id", nullable = false)
+    @JoinColumn(name = "sender_account_id", nullable = true)
     var senderAccount: Account? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)

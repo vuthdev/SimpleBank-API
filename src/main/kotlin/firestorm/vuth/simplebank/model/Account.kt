@@ -35,12 +35,4 @@ class Account(
 
     @Column(name = "created_at", nullable = false)
     var createdAt: LocalDateTime = LocalDateTime.now(),
-) {
-    fun debit(amount: BigDecimal) {
-        this.balance = this.balance.subtract(amount)
-    }
-
-    fun credit(amount: BigDecimal) {
-        this.balance = this.balance.add(amount)
-    }
-}
+)
