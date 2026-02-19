@@ -1,0 +1,1 @@
+ALTER TABLE IF EXISTS accounts ALTER COLUMN account_number SET DEFAULT nextval('account_number_seq');

@@ -1,0 +1,23 @@
+spring:
+  sql:
+    init:
+      mode: always
+  application:
+    name: SimpleBank
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+
+server:
+  port: ${SERVER_PORT}
+
+jwt:
+  secret: ${JWT_SECRET}
+  access-token-expire-minutes: ${JWT_ACCESS_TOKEN_EXPIRE_MINUTES}
+  refresh-token-expire-minutes: ${JWT_REFRESH_TOKEN_EXPIRE_MINUTES}
+  issuer: ${JWT_ISSUER}
