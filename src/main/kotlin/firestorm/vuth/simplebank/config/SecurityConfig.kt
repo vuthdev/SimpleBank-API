@@ -1,6 +1,7 @@
 package firestorm.vuth.simplebank.config
 
 import firestorm.vuth.simplebank.utils.JwtTokenService
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.convert.converter.Converter
@@ -29,7 +30,8 @@ import javax.crypto.spec.SecretKeySpec
 @EnableWebSecurity
 @EnableMethodSecurity
 class SecurityConfig(
-    private val jwtTokenService: JwtTokenService
+    private val jwtTokenService: JwtTokenService,
+    @Value("\${cors.allowed.origin}") private val corsAllowedOrigin: String,
 ) {
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
@@ -82,8 +84,8 @@ class SecurityConfig(
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val configuration = CorsConfiguration().apply {
-            allowedOrigins = listOf("http://localhost:4200")
-            allowedMethods = listOf("GET", "POST", "PUT", "DELETE")
+            allowedOrigins = listOf(corsAllowedOrigin)
+            allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "PATCH")
             allowedHeaders = listOf("*")
             exposedHeaders = listOf("Authorization", "Content-Disposition")
             allowCredentials = true

@@ -15,7 +15,6 @@ class AdminInitializer(
     private val accountRepo: AccountRepo,
     private val passwordEncoder: PasswordEncoder
 ) : CommandLineRunner {
-
     override fun run(vararg args: String) {
         if (!userRepository.existsByEmail("admin@bank.com")) {
 
