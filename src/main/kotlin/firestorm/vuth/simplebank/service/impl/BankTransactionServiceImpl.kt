@@ -53,7 +53,8 @@ class BankTransactionServiceImpl(
         val accounts = user.bankAccounts
         if (accounts.isEmpty()) return emptyList()
 
-        val transactions: Page<Transaction> = transactionRepo.findBySenderAccountInOrReceiverAccountIn(accounts, accounts, finalPage)
+        val transactions: Page<Transaction> =
+            transactionRepo.findBySenderAccountInOrReceiverAccountIn(accounts, accounts, finalPage)
         return transactions.content.toResponse()
     }
 }

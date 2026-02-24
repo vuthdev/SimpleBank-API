@@ -22,6 +22,10 @@ class WebMvcConfig(
             .excludePathPatterns(
                 "/api/auth/login",
                 "/api/auth/register",
+                "/api/auth/refresh",
+                "/api/user/account/me",
+                "/api/admin/**",
+                "/api/transactions",
             )
 
         registry.addInterceptor(auditTrailInterceptor)
