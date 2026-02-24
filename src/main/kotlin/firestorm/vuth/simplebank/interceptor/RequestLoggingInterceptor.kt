@@ -15,7 +15,7 @@ class RequestLoggingInterceptor: HandlerInterceptor {
         request.setAttribute("startTime", System.currentTimeMillis())
 
         logger.info(
-            "→ REQUEST  | method=${request.method} | path=${request.requestURI} | ip=${request.remoteAddr}"
+            "→ REQUEST | method=${request.method} | path=${request.requestURI} | ip=${request.remoteAddr}"
         )
 
         return true

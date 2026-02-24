@@ -25,9 +25,7 @@ class RateLimitInterceptor: HandlerInterceptor {
     )
 
     override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
-        val userId = getAuthenticatedUserId() ?: run {
-            return true
-        }
+        val userId = getAuthenticatedUserId() ?: return false
 
         val now = System.currentTimeMillis()
         val record = requestCounts.compute(userId) { _, existing ->
@@ -47,6 +45,7 @@ class RateLimitInterceptor: HandlerInterceptor {
         return if (currentCount > MAX_REQUESTS) {
             logger.warn("🚫 RATE LIMIT exceeded | user=$userId | count=$currentCount | path=${request.requestURI}")
             response.status = HttpStatus.TOO_MANY_REQUESTS.value()
+            response.contentType = "application/json"
             response.writer.write("""{"error": "Too many requests. Please wait before retrying."}""")
             false
         } else {

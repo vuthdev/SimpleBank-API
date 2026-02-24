@@ -8,7 +8,6 @@ import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.HandlerInterceptor
 import java.lang.Exception
-import java.util.UUID
 
 @Component
 class AuditTrailInterceptor(
