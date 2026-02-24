@@ -1,10 +1,12 @@
 package firestorm.vuth.simplebank.service.impl
 
-import firestorm.vuth.simplebank.dto.response.AccountDetailResponse
 import firestorm.vuth.simplebank.dto.response.UserResponse
+import firestorm.vuth.simplebank.mapper.toResponse
 import firestorm.vuth.simplebank.model.User
 import firestorm.vuth.simplebank.repository.UserRepo
 import firestorm.vuth.simplebank.service.UserService
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
@@ -16,18 +18,17 @@ import java.util.UUID
 class UserServiceImpl(
     private val userRepo: UserRepo,
 ): UserService, UserDetailsService {
+    override fun getAllUsers(pageable: Pageable): List<UserResponse> {
+        val users: Page<User> = userRepo.findAll(pageable)
+        return users.content.toResponse()
+    }
+
     override fun currentUser(jwt: Jwt): UserResponse {
         val userEmail = jwt.subject
         val user = userRepo.findByEmail(userEmail)
             ?: throw UsernameNotFoundException("User not found")
 
-        return UserResponse(
-            id = user.id,
-            fullName = user.firstName + " " + user.lastName,
-            email = user.username,
-            roles = user.authorities.map { it.authority },
-            account = user.bankAccounts.map { AccountDetailResponse(it.accountNumber, it.balance, it.currency) },
-        )
+        return user.toResponse()
     }
 
     override fun findById(id: UUID): User {

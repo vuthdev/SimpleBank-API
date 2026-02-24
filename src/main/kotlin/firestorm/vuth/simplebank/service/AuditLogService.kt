@@ -5,7 +5,6 @@ import firestorm.vuth.simplebank.repository.AuditLogRepository
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
-import java.util.UUID
 
 @Service
 class AuditLogService(
@@ -15,7 +14,7 @@ class AuditLogService(
 
     @Async
     fun save(
-        userId: UUID?,
+        userEmail: String?,
         action: String,
         path: String,
         ip: String,
@@ -25,7 +24,7 @@ class AuditLogService(
         try {
             auditLogRepository.save(
                 AuditLog(
-                    userId = userId,
+                    userEmail = userEmail,
                     action = action,
                     path = path,
                     ip = ip,

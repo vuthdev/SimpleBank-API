@@ -3,9 +3,11 @@ package firestorm.vuth.simplebank.interceptor
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Component
 import org.springframework.web.servlet.HandlerInterceptor
 import java.lang.Exception
 
+@Component
 class RequestLoggingInterceptor: HandlerInterceptor {
     private val logger = LoggerFactory.getLogger(javaClass)
 

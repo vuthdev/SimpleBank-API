@@ -6,10 +6,12 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.oauth2.jwt.Jwt
+import org.springframework.stereotype.Component
 import org.springframework.web.servlet.HandlerInterceptor
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 
+@Component
 class RateLimitInterceptor: HandlerInterceptor {
     private val logger = LoggerFactory.getLogger(javaClass)
     private val MAX_REQUESTS = 5
@@ -22,7 +24,7 @@ class RateLimitInterceptor: HandlerInterceptor {
         val windowStart: Long = System.currentTimeMillis(),
     )
 
-    override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any?): Boolean {
+    override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
         val userId = getAuthenticatedUserId() ?: run {
             return true
         }

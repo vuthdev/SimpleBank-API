@@ -8,6 +8,11 @@ import firestorm.vuth.simplebank.dto.response.UserResponse
 import firestorm.vuth.simplebank.service.AccountService
 import firestorm.vuth.simplebank.service.TransferService
 import firestorm.vuth.simplebank.service.UserService
+import org.hibernate.engine.jdbc.Size
+import org.hibernate.query.Page.page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -18,6 +23,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
@@ -40,6 +46,15 @@ class AdminController(
     @DeleteMapping("/account/delete/{accountNumber}")
     fun deleteAccount(@PathVariable accountNumber: Long): ResponseEntity<Unit> =
         ResponseEntity.ok(accountService.deleteAccount(accountNumber))
+
+    @GetMapping("/user")
+    fun getUser(
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "10") size: Int,
+    ): ResponseEntity<List<UserResponse>> {
+        val pageable = PageRequest.of(page, size, Sort.Direction.DESC, "id")
+        return ResponseEntity.ok(userService.getAllUsers(pageable))
+    }
 
     @GetMapping("/user/{id}")
     fun getUserById(@PathVariable id: UUID): UserResponse {

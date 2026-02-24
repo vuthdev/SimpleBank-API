@@ -7,6 +7,6 @@ import java.util.UUID
 
 @Repository
 interface AuditLogRepository: JpaRepository<AuditLog, UUID> {
-    fun findByUserIdOrderByCreatedAtDesc(userId: UUID): List<AuditLog>
+    fun findByUserEmailOrderByCreatedAtDesc(userEmail: String): List<AuditLog>
     fun findByStatusGreaterThanEqualOrderByCreatedAtDesc(status: Int): List<AuditLog>
 }

@@ -14,7 +14,7 @@ import java.util.UUID
 class AuditTrailInterceptor(
     private val auditLongService: AuditLogService,
 ): HandlerInterceptor {
-    override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any?): Boolean {
+    override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
         request.setAttribute("auditStartTime", System.currentTimeMillis())
         return true
     }
@@ -22,14 +22,14 @@ class AuditTrailInterceptor(
     override fun afterCompletion(
         request: HttpServletRequest,
         response: HttpServletResponse,
-        handler: Any?,
+        handler: Any,
         ex: Exception?
     ) {
         val duration = System.currentTimeMillis() - request.getAttribute("auditStartTime") as Long
-        val userId = getAuthenticatedUserId()
+        val userEmail = getAuthenticatedUserEmail()
 
         auditLongService.save(
-            userId = userId,
+            userEmail = userEmail,
             action = request.method,
             path = request.requestURI,
             ip = request.remoteAddr,
@@ -38,9 +38,9 @@ class AuditTrailInterceptor(
         )
     }
 
-    fun getAuthenticatedUserId(): UUID? {
+    fun getAuthenticatedUserEmail(): String? {
         val auth = SecurityContextHolder.getContext().authentication
         val jwt = auth?.credentials as? Jwt ?: return null
-        return runCatching { UUID.fromString(jwt.subject) }.getOrNull()
+        return jwt.subject
     }
 }
