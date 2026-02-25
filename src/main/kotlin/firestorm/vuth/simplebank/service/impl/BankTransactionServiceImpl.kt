@@ -16,8 +16,10 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
+import java.util.UUID
 
 @Service
 class BankTransactionServiceImpl(
@@ -43,8 +45,8 @@ class BankTransactionServiceImpl(
         return transactionRepo.save(transaction).toResponse()
     }
 
-    override fun getTransaction(email: String, pageable: Pageable): List<TransactionResponse> {
-        val user = userRepo.findByEmail(email) ?: throw ResourceNotFoundException("User $email not found")
+    override fun getTransaction(id: String, pageable: Pageable): List<TransactionResponse> {
+        val user = userRepo.findByIdOrNull(UUID.fromString(id)) ?: throw ResourceNotFoundException("User $id not found")
 
         val finalPage = if (pageable.sort.isUnsorted) {
             PageRequest.of(pageable.pageNumber, pageable.pageSize, Sort.by(Sort.Direction.DESC, "createdAt"))

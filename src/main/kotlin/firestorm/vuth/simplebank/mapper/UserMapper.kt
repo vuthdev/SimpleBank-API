@@ -10,8 +10,8 @@ fun User.toResponse(): UserResponse {
     return UserResponse(
         id = txId,
         fullName = this.firstName + " " + this.lastName,
-        email = this.username,
-        roles = this.authorities.map { it.authority },
+        email = this.email,
+        roles = this.roles.toList(),
         account = this.bankAccounts.map { AccountDetailResponse(it.accountNumber, it.balance, it.currency) },
     )
 }

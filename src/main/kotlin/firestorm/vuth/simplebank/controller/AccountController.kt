@@ -24,7 +24,7 @@ class AccountController(
 ) {
     @GetMapping("/me")
     fun getCurrentUser(@AuthenticationPrincipal jwt: Jwt): ResponseEntity<UserResponse> =
-        ResponseEntity.ok(userService.currentUser(jwt))
+        ResponseEntity.ok(userService.currentUser(jwt.subject))
 
     @GetMapping("/{accountNumber}")
     fun checkAccount(@PathVariable accountNumber: Long, @AuthenticationPrincipal user: Jwt): ResponseEntity<AccountDetailResponse> =

@@ -11,7 +11,9 @@ import firestorm.vuth.simplebank.repository.AccountRepo
 import firestorm.vuth.simplebank.repository.UserRepo
 import firestorm.vuth.simplebank.service.AccountService
 import firestorm.vuth.simplebank.utils.BankConfig
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import java.util.UUID
 
 @Service
 class AccountServiceImpl(
@@ -40,9 +42,9 @@ class AccountServiceImpl(
 
     override fun checkAccount(
         accountNumber: Long,
-        email: String
+        userId: String
     ): AccountDetailResponse {
-        val user = userRepo.findByEmail(email)
+        val user = userRepo.findByIdOrNull(UUID.fromString(userId))
             ?: throw ResourceNotFoundException("User does not exist")
         val account = accountRepo.findByAccountNumber(accountNumber)
             ?: throw ResourceNotFoundException("Account does not exist")

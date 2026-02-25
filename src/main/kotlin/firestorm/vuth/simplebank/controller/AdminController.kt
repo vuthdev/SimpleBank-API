@@ -55,11 +55,11 @@ class AdminController(
     fun getUserById(@PathVariable id: UUID): UserResponse {
         val user = userService.findById(id)
         return UserResponse(
-            user?.id,
-            user?.firstName + " " + user?.lastName,
-            user?.username,
-            user?.authorities?.map { it.authority } as List<String?>,
-            user.bankAccounts.map { AccountDetailResponse(it.accountNumber, it.balance, it.currency) },
+            id = user?.id,
+            fullName = user?.firstName + " " + user?.lastName,
+            email = user?.email,
+            roles = user?.roles?.toList(),
+            account = user?.bankAccounts?.map { AccountDetailResponse(it.accountNumber, it.balance, it.currency) },
         )
     }
 }

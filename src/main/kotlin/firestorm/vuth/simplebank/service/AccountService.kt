@@ -6,5 +6,5 @@ import firestorm.vuth.simplebank.dto.response.AccountDetailResponse
 interface AccountService {
     fun createAccount(request: AccountRequest): AccountDetailResponse
     fun deleteAccount(accountNumber: Long)
-    fun checkAccount(accountNumber: Long, email: String): AccountDetailResponse
+    fun checkAccount(accountNumber: Long, userId: String): AccountDetailResponse
 }

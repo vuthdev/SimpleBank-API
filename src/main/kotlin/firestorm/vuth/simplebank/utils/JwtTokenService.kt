@@ -1,6 +1,10 @@
 package firestorm.vuth.simplebank.utils
 
 import firestorm.vuth.simplebank.config.JwtProperties
+import firestorm.vuth.simplebank.model.CustomUserDetails
+import firestorm.vuth.simplebank.model.User
+import io.jsonwebtoken.ExpiredJwtException
+import io.jsonwebtoken.JwtException
 import io.jsonwebtoken.JwtParser
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
@@ -27,13 +31,14 @@ class JwtTokenService(
         .build()
 
     fun generateAccessToken(authentication: Authentication): String {
-        val user = authentication.principal as UserDetails
+        val user = authentication.principal as CustomUserDetails
         val now = Date()
         val expiry = Date(now.time + properties.accessTokenExpireMinutes.minutes.toJavaDuration().toMillis())
 
         return Jwts.builder()
-            .subject(user.username) // store email as username because login with email is cool
-            .claim("roles", user.authorities.map { it.authority?.removePrefix("ROLE_") })
+            .subject(user.id.toString())
+            .claim("roles", user.authorities.mapNotNull { it.authority?.removePrefix("ROLE_") })
+            .claim("type", "access")
             .issuedAt(Date())
             .expiration(expiry)
             .issuer(properties.issuer)
@@ -42,12 +47,12 @@ class JwtTokenService(
             .compact()
     }
 
-    fun generateRefreshToken(username: String): String {
+    fun generateRefreshToken(userId: String): String {
         val now = Date()
-        val expiry = Date(now.time + properties.refreshTokenExpireMinutes.days.toJavaDuration().toMillis())
+        val expiry = Date(now.time + properties.refreshTokenExpireDays.days.toJavaDuration().toMillis())
 
         return Jwts.builder()
-            .subject(username)
+            .subject(userId)
             .claim("type", "refresh")
             .issuedAt(now)
             .expiration(expiry)
@@ -62,7 +67,9 @@ class JwtTokenService(
             val claims = parser.parseSignedClaims(authToken).payload
             if (claims["type"] != "refresh") return null
             claims.subject
-        }catch (e: Exception) {
+        } catch (e: ExpiredJwtException) {
+            null
+        } catch (e: JwtException) {
             null
         }
     }

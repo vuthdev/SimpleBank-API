@@ -1,5 +1,6 @@
 package firestorm.vuth.simplebank.service.impl
 
+import firestorm.vuth.simplebank.config.JwtProperties
 import firestorm.vuth.simplebank.dto.request.LoginRequest
 import firestorm.vuth.simplebank.dto.request.RegisterRequest
 import firestorm.vuth.simplebank.dto.response.ApiResponse
@@ -17,6 +18,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 @Service
 class AuthServiceImpl(
@@ -25,7 +28,8 @@ class AuthServiceImpl(
     private val authenticationManager: AuthenticationManager,
     private val jwtTokenService: JwtTokenService,
     private val passwordEncoder: PasswordEncoder,
-    private val userDetailsService: UserDetailsService
+    private val userDetailsService: UserDetailsService,
+    private val properties: JwtProperties
 ): AuthService {
     @Transactional
     override fun login(request: LoginRequest): AuthResponse {
@@ -36,7 +40,12 @@ class AuthServiceImpl(
 
             val accessToken = jwtTokenService.generateAccessToken(authentication)
             val refreshToken = jwtTokenService.generateRefreshToken(authentication.name)
-            return AuthResponse(accessToken, refreshToken)
+            return AuthResponse(
+                accessToken = accessToken,
+                refreshToken = refreshToken,
+                expiresIn = properties.accessTokenExpireMinutes.seconds.inWholeSeconds,
+                tokenType = "Bearer",
+            )
         } catch (ex: BadCredentialsException) {
             throw RuntimeException("Invalid username or password")
         } catch (ex: Exception) {
@@ -77,6 +86,11 @@ class AuthServiceImpl(
         )
         val newRefreshToken = jwtTokenService.generateRefreshToken(username)
 
-        return AuthResponse(newAccessToken, newRefreshToken)
+        return AuthResponse(
+            accessToken = newAccessToken,
+            refreshToken = newRefreshToken,
+            expiresIn = properties.accessTokenExpireMinutes.seconds.inWholeSeconds,
+            tokenType = "Bearer",
+        )
     }
 }

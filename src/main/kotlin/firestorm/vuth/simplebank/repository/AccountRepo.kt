@@ -17,7 +17,7 @@ interface AccountRepo: JpaRepository<Account, UUID> {
     fun findByAccountNumber(accountNumber: Long): Account?
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("SELECT a FROM Account a WHERE a.accountNumber = :accountNumber")
+    @Query("select id, account_number, balance, currency, user_id, created_at from accounts where account_number = :accountNumber", nativeQuery = true)
     fun findByAccountNumberForUpdate(@Param("accountNumber") accNum: Long): Account?
 
     @Query("select COUNT(*) from Account a JOIN User u ON a.user.id = u.id WHERE u.email = :email")

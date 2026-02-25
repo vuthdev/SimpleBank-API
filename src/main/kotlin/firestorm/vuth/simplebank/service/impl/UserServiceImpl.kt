@@ -2,11 +2,14 @@ package firestorm.vuth.simplebank.service.impl
 
 import firestorm.vuth.simplebank.dto.response.UserResponse
 import firestorm.vuth.simplebank.mapper.toResponse
+import firestorm.vuth.simplebank.model.CustomUserDetails
 import firestorm.vuth.simplebank.model.User
 import firestorm.vuth.simplebank.repository.UserRepo
 import firestorm.vuth.simplebank.service.UserService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.data.repository.findByIdOrNull
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
@@ -23,9 +26,8 @@ class UserServiceImpl(
         return users.content.toResponse()
     }
 
-    override fun currentUser(jwt: Jwt): UserResponse {
-        val userEmail = jwt.subject
-        val user = userRepo.findByEmail(userEmail)
+    override fun currentUser(userId: String): UserResponse {
+        val user = userRepo.findByIdOrNull(UUID.fromString(userId))
             ?: throw UsernameNotFoundException("User not found")
 
         return user.toResponse()
@@ -39,7 +41,15 @@ class UserServiceImpl(
         userRepo.deleteById(id)
     }
 
-    override fun loadUserByUsername(email: String): UserDetails =
-        userRepo.findByEmail(email)
+    override fun loadUserByUsername(email: String): UserDetails {
+        val user = userRepo.findByEmail(email)
             ?: throw UsernameNotFoundException("User with email $email not found")
+        return CustomUserDetails(
+            user.id,
+            user.email,
+            user.getPassword(),
+            user.roles.map { SimpleGrantedAuthority("ROLE_${it}") },
+        )
+    }
+
 }

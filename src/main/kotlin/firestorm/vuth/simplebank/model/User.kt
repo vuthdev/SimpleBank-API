@@ -11,6 +11,7 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
+import org.hibernate.property.access.spi.Getter
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
@@ -25,7 +26,7 @@ class User(
     val id: UUID? = null,
 
     @Column(unique = true, nullable = false)
-    private var email: String,
+    var email: String,
 
     @Column(name = "first_name", nullable = false)
     var firstName: String,
@@ -45,15 +46,6 @@ class User(
 
     @Column(name = "created_at", nullable = false)
     var createdAt: LocalDateTime = LocalDateTime.now(),
-): UserDetails {
-    override fun getAuthorities(): Collection<GrantedAuthority> {
-        return roles.map { SimpleGrantedAuthority("ROLE_$it") }.toMutableSet()
-    }
-
-    override fun getPassword(): String? = this.password
-    override fun getUsername(): String = this.email
-    override fun isAccountNonExpired(): Boolean = true
-    override fun isAccountNonLocked(): Boolean = true
-    override fun isCredentialsNonExpired(): Boolean = true
-    override fun isEnabled(): Boolean = true
+) {
+    fun getPassword(): String? = password
 }

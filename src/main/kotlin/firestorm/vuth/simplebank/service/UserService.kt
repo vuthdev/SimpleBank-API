@@ -8,7 +8,7 @@ import java.util.UUID
 
 interface UserService {
     fun getAllUsers(pageable: Pageable): List<UserResponse>
-    fun currentUser(jwt: Jwt): UserResponse
+    fun currentUser(userId: String): UserResponse
     fun findById(id: UUID): User?
     fun deleteById(id: UUID)
 }

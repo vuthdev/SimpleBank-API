@@ -20,5 +20,5 @@ interface BankTransactionService {
         status: TransactionStatus
     ): TransactionResponse
 
-    fun getTransaction(email: String, pageable: Pageable): List<TransactionResponse>
+    fun getTransaction(id: String, pageable: Pageable): List<TransactionResponse>
 }
