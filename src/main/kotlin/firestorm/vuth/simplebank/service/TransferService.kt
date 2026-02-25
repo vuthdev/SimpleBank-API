@@ -8,5 +8,5 @@ import firestorm.vuth.simplebank.dto.response.TransactionResponse
 interface TransferService {
     fun withdraw(accountNumber: Long, request: WithdrawRequest): TransactionResponse
     fun deposit(accountNumber: Long, request: DepositRequest): TransactionResponse
-    fun transfer(request: TransferRequest): TransactionResponse
+    fun transfer(userId: String, request: TransferRequest): TransactionResponse
 }

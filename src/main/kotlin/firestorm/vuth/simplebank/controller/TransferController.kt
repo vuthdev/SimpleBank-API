@@ -21,8 +21,8 @@ class TransferController(
     private val bankTransactionService: BankTransactionService
 ) {
     @PostMapping("/transfer")
-    fun transfer(@RequestBody request: TransferRequest): ResponseEntity<TransactionResponse> {
-        return ResponseEntity.ok(transferService.transfer(request))
+    fun transfer(@AuthenticationPrincipal jwt: Jwt, @RequestBody request: TransferRequest): ResponseEntity<TransactionResponse> {
+        return ResponseEntity.ok(transferService.transfer(jwt.subject, request))
     }
 
     @GetMapping

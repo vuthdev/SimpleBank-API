@@ -15,10 +15,12 @@ import firestorm.vuth.simplebank.service.BankTransactionService
 import firestorm.vuth.simplebank.service.TransferService
 import firestorm.vuth.simplebank.utils.BankConfig
 import jakarta.transaction.Transactional
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
+import java.util.UUID
 
 @Service
 class TransferServiceImpl(
@@ -71,11 +73,8 @@ class TransferServiceImpl(
     }
 
     @Transactional
-    override fun transfer(request: TransferRequest): TransactionResponse {
-        val userEmail = SecurityContextHolder.getContext().authentication?.name
-            ?: throw AccessDeniedException("User Not Found!")
-
-        val user = userRepo.findByEmail(userEmail)
+    override fun transfer(userId: String, request: TransferRequest): TransactionResponse {
+        val user = userRepo.findByIdOrNull(UUID.fromString(userId))
             ?: throw ResourceNotFoundException("User not found!")
 
         if(request.amount <= BigDecimal.ZERO) throw BusinessRuleException("Amount must be positive")
