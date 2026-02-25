@@ -2,14 +2,12 @@ package firestorm.vuth.simplebank.utils
 
 import firestorm.vuth.simplebank.config.JwtProperties
 import firestorm.vuth.simplebank.model.CustomUserDetails
-import firestorm.vuth.simplebank.model.User
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.JwtException
 import io.jsonwebtoken.JwtParser
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import org.springframework.security.core.Authentication
-import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Component
 import java.util.Date
 import java.util.UUID

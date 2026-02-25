@@ -38,9 +38,9 @@ class AdminController(
     fun withdraw(@PathVariable accountNumber: Long, @RequestBody request: WithdrawRequest): ResponseEntity<TransactionResponse> =
         ResponseEntity.ok(transferService.withdraw(accountNumber, request))
 
-    @DeleteMapping("/account/delete/{accountNumber}")
-    fun deleteAccount(@PathVariable accountNumber: Long): ResponseEntity<Unit> =
-        ResponseEntity.ok(accountService.deleteAccount(accountNumber))
+    @DeleteMapping("/account/delete/{accountId}")
+    fun deleteAccount(@PathVariable accountId: UUID): ResponseEntity<Unit> =
+        ResponseEntity.ok(accountService.deleteAccount(accountId))
 
     @GetMapping("/user")
     fun getUser(

@@ -6,6 +6,7 @@ import firestorm.vuth.simplebank.dto.request.WithdrawRequest
 import firestorm.vuth.simplebank.dto.response.TransactionResponse
 import firestorm.vuth.simplebank.exception.BusinessRuleException
 import firestorm.vuth.simplebank.exception.ResourceNotFoundException
+import firestorm.vuth.simplebank.model.Account
 import firestorm.vuth.simplebank.model.Enum.Currency
 import firestorm.vuth.simplebank.model.Enum.TransactionStatus
 import firestorm.vuth.simplebank.model.Enum.TransactionType
@@ -31,18 +32,24 @@ class TransferServiceImpl(
 
     @Transactional
     override fun withdraw(accountNumber: Long, request: WithdrawRequest): TransactionResponse {
+        val account = accountRepo.findByAccountNumber(accountNumber) ?: throw BusinessRuleException("Account does not exist")
+
         if(request.amount < BigDecimal.ZERO) throw BusinessRuleException("Amount should be positive")
         if(request.amount > BigDecimal.valueOf(10000)) throw BusinessRuleException("Cannot withdraw more than 10000.")
 
-        val row = accountRepo.debitBalance(accountNumber, request.amount)
-        if (row == 0) throw ResourceNotFoundException("Insufficient balance or account not found")
+        if(account.balance >= request.amount) {
+            account.balance = account.balance.subtract(request.amount)
+            accountRepo.save(account)
+        } else {
+            throw ResourceNotFoundException("Insufficient balance")
+        }
 
         val bankAcc = accountRepo.findByAccountNumber(BankConfig.SYSTEM_ACCOUNT_NUMBER.toLong())
             ?: throw ResourceNotFoundException("No System Account found?!")
 
         return bankTransactionService.makeTransaction(
             senderAccount = bankAcc,
-            receiverAccount = accountRepo.findByAccountNumber(accountNumber)!!,
+            receiverAccount = account,
             amount = request.amount,
             currency = Currency.valueOf(request.currency),
             type = TransactionType.WITHDRAW,
@@ -56,15 +63,18 @@ class TransferServiceImpl(
         if(request.amount < BigDecimal.valueOf(5)) throw BusinessRuleException("Must deposit at least 5.")
         if(request.amount > BigDecimal.valueOf(10000)) throw BusinessRuleException("Cannot deposit more than 10000.")
 
-        val debit = accountRepo.creditBalance(accountNumber, request.amount)
-        if (debit == 0) throw ResourceNotFoundException("Account not found!")
+        val account = accountRepo.findByAccountNumber(accountNumber)
+            ?: throw ResourceNotFoundException("Account does not exist")
+
+        account.balance = account.balance.add(request.amount)
+        accountRepo.save(account)
 
         val bankAcc = accountRepo.findByAccountNumber(BankConfig.SYSTEM_ACCOUNT_NUMBER.toLong())
             ?: throw ResourceNotFoundException("No System Account found?!")
 
         return bankTransactionService.makeTransaction(
             senderAccount = bankAcc,
-            receiverAccount = accountRepo.findByAccountNumber(accountNumber)!!,
+            receiverAccount = account,
             amount = request.amount,
             currency = Currency.valueOf(request.currency),
             type = TransactionType.DEPOSIT,
@@ -77,20 +87,29 @@ class TransferServiceImpl(
         val user = userRepo.findByIdOrNull(UUID.fromString(userId))
             ?: throw ResourceNotFoundException("User not found!")
 
+        val sender = accountRepo.findByAccountNumber(request.senderAccount)
+            ?: throw ResourceNotFoundException("No sender found!")
+
+        val receiver = accountRepo.findByAccountNumber(request.receiverAccount)
+            ?: throw ResourceNotFoundException("No receiver found!")
+
         if(request.amount <= BigDecimal.ZERO) throw BusinessRuleException("Amount must be positive")
         if(request.amount > BigDecimal.valueOf(10000)) throw BusinessRuleException("Cannot transfer more than 10000.")
         if (request.senderAccount == request.receiverAccount)
             throw BusinessRuleException("Cannot transfer to the same account")
+        if(sender.user?.id != user.id) throw BusinessRuleException("Wrong user account!")
 
-        val senderRow = accountRepo.debitBalanceForTransfer(request.senderAccount, request.amount, user.id)
-        if (senderRow == 0) throw ResourceNotFoundException("Insufficient balance or sender not found")
-
-        val receiverRow = accountRepo.creditBalance(request.receiverAccount, request.amount)
-        if (receiverRow == 0) throw ResourceNotFoundException("No receiver found!")
+        if(sender.balance >= request.amount) {
+            sender.balance = sender.balance.subtract(request.amount)
+            receiver.balance = receiver.balance.add(request.amount)
+            accountRepo.saveAll(listOf(sender, receiver))
+        } else {
+            throw ResourceNotFoundException("Insufficient balance!")
+        }
 
         return bankTransactionService.makeTransaction(
-            senderAccount = accountRepo.findByAccountNumber(request.senderAccount)!!,
-            receiverAccount = accountRepo.findByAccountNumber(request.receiverAccount)!!,
+            senderAccount = sender,
+            receiverAccount = receiver,
             amount = request.amount,
             currency = request.currency,
             type = TransactionType.TRANSFER,

@@ -33,12 +33,8 @@ class AccountServiceImpl(
         return accountRepo.save(account).toResponse()
     }
 
-    override fun deleteAccount(accountNumber: Long) {
-        val account = accountRepo.findByAccountNumberForUpdate(accountNumber)
-            ?: throw ResourceNotFoundException("Account does not exist")
-
-        return accountRepo.deleteById(account.id!!)
-    }
+    override fun deleteAccount(accountId: UUID) =
+        accountRepo.deleteById(accountId)
 
     override fun checkAccount(
         accountNumber: Long,
