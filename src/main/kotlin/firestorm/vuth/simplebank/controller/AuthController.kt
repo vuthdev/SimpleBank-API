@@ -14,23 +14,23 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api")
 class AuthController(
     private val authService: AuthService
 ) {
-    @PostMapping("/login")
+    @PostMapping("/auth/login")
     fun login(@RequestBody request: LoginRequest): ResponseEntity<AuthResponse> {
         val success = authService.login(request)
         return ResponseEntity.status(HttpStatus.OK).body(success)
     }
 
-    @PostMapping("/register")
+    @PostMapping("/auth/register")
     fun register(@RequestBody request: RegisterRequest): ResponseEntity<ApiResponse> {
         val register = authService.register(request)
         return ResponseEntity.status(HttpStatus.CREATED).body(register)
     }
 
-    @PostMapping("/refresh")
+    @PostMapping("/auth/refresh")
     fun refreshToken(@RequestBody refreshToken: RefreshTokenRequest): ResponseEntity<Any> {
         val token = authService.refresh(refreshToken.refreshToken) ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
             "invalid refresh token"

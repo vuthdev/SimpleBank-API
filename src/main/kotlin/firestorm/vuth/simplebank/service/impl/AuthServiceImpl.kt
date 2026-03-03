@@ -6,8 +6,10 @@ import firestorm.vuth.simplebank.dto.request.RegisterRequest
 import firestorm.vuth.simplebank.dto.response.ApiResponse
 import firestorm.vuth.simplebank.dto.response.AuthResponse
 import firestorm.vuth.simplebank.model.Account
+import firestorm.vuth.simplebank.model.Customer
 import firestorm.vuth.simplebank.model.User
 import firestorm.vuth.simplebank.repository.AccountRepo
+import firestorm.vuth.simplebank.repository.CustomerRepo
 import firestorm.vuth.simplebank.repository.UserRepo
 import firestorm.vuth.simplebank.service.AuthService
 import firestorm.vuth.simplebank.utils.JwtTokenService
@@ -24,7 +26,7 @@ import kotlin.time.Duration.Companion.seconds
 @Service
 class AuthServiceImpl(
     private val userRepo: UserRepo,
-    private val accountRepo: AccountRepo,
+    private val customerRepo: CustomerRepo,
     private val authenticationManager: AuthenticationManager,
     private val jwtTokenService: JwtTokenService,
     private val passwordEncoder: PasswordEncoder,
@@ -35,7 +37,7 @@ class AuthServiceImpl(
     override fun login(request: LoginRequest): AuthResponse {
         try {
             val authentication = authenticationManager.authenticate(
-                UsernamePasswordAuthenticationToken(request.email, request.password)
+                UsernamePasswordAuthenticationToken(request.username, request.password)
             )
 
             val accessToken = jwtTokenService.generateAccessToken(authentication)
@@ -47,7 +49,7 @@ class AuthServiceImpl(
                 tokenType = "Bearer",
             )
         } catch (ex: BadCredentialsException) {
-            throw RuntimeException("Invalid email or password")
+            throw RuntimeException("Invalid username or password")
         } catch (ex: Exception) {
             throw RuntimeException("Authentication error", ex)
         }
@@ -55,24 +57,23 @@ class AuthServiceImpl(
 
     @Transactional
     override fun register(request: RegisterRequest): ApiResponse {
-        if (userRepo.existsByEmail(request.email)) {
-            throw BadCredentialsException("User with email ${request.email} already exists")
+        if (userRepo.existsByUsername(request.username)) {
+            throw BadCredentialsException("User with username ${request.username} already exists")
         }
 
         val user = User(
-            firstName = request.firstName,
-            lastName = request.lastName,
-            email = request.email,
+            username = request.username,
             password = passwordEncoder.encode(request.password),
         )
-
         val savedUser = userRepo.save(user)
 
-        val account = Account(
+        val customer = Customer (
+            fullName = request.fullName,
+            email = request.email,
+            phoneNumber = request.phoneNumber,
             user = savedUser,
         )
-
-        accountRepo.save(account)
+        customerRepo.save(customer)
         return ApiResponse(true, "Successfully registered successfully")
     }
 

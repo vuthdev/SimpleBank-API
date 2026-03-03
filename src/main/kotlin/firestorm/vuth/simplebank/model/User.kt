@@ -10,6 +10,7 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.OneToMany
+import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
 import java.time.LocalDateTime
 import java.util.UUID
@@ -22,13 +23,7 @@ class User(
     val id: UUID? = null,
 
     @Column(unique = true, nullable = false)
-    var email: String,
-
-    @Column(name = "first_name", nullable = false)
-    var firstName: String,
-
-    @Column(name = "last_name", nullable = false)
-    var lastName: String,
+    var username: String,
 
     @Column(nullable = false)
     private var password: String?,
@@ -37,8 +32,8 @@ class User(
     @Column(nullable = false)
     var roles: MutableSet<UserRole> = mutableSetOf(UserRole.USER),
 
-    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
-    var bankAccounts: List<Account> = mutableListOf(),
+    @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
+    var customer: Customer? = null,
 
     @Column(name = "created_at", nullable = false)
     var createdAt: LocalDateTime = LocalDateTime.now(),

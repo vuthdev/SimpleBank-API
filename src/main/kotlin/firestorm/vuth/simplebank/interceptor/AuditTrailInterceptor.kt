@@ -24,10 +24,10 @@ class AuditTrailInterceptor(
         ex: Exception?
     ) {
         val duration = System.currentTimeMillis() - request.getAttribute("auditStartTime") as Long
-        val email = getAuthenticatedUserEmail()
+        val username = getAuthenticatedUsername()
 
         auditLongService.save(
-            email = email,
+            username = username,
             action = request.method,
             path = request.requestURI,
             ip = request.remoteAddr,
@@ -36,7 +36,7 @@ class AuditTrailInterceptor(
         )
     }
 
-    fun getAuthenticatedUserEmail(): String? {
+    fun getAuthenticatedUsername(): String? {
         return SecurityContextHolder.getContext().authentication?.name
     }
 }

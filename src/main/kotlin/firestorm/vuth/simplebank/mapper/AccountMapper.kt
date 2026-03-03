@@ -8,3 +8,6 @@ fun Account.toResponse(): AccountDetailResponse = AccountDetailResponse(
     this.balance,
     this.currency,
 )
+
+fun List<Account>.toResponse(): List<AccountDetailResponse> =
+    this.mapNotNull { it.toResponse() }

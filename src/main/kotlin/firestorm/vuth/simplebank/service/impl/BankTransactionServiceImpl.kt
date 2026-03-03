@@ -11,20 +11,19 @@ import firestorm.vuth.simplebank.model.Transaction
 import firestorm.vuth.simplebank.repository.TransactionRepo
 import firestorm.vuth.simplebank.repository.UserRepo
 import firestorm.vuth.simplebank.service.BankTransactionService
+import firestorm.vuth.simplebank.utils.SecurityUtils
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
-import org.springframework.data.repository.findByIdOrNull
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
-import java.util.UUID
 
 @Service
 class BankTransactionServiceImpl(
     private val transactionRepo: TransactionRepo,
     private val userRepo: UserRepo,
+    private val securityUtils: SecurityUtils
 ): BankTransactionService {
     override fun makeTransaction(
         senderAccount: Account,
@@ -46,15 +45,17 @@ class BankTransactionServiceImpl(
     }
 
     override fun getTransaction(pageable: Pageable): List<TransactionResponse> {
-        val email = SecurityContextHolder.getContext().authentication?.name
-        val user = userRepo.findByEmail(email)
-            ?: throw ResourceNotFoundException("User $email not found")
+        val username = securityUtils.getCurrentUsername()
+        val user = userRepo.findByUsername(username)
+            ?: throw ResourceNotFoundException("User $username not found")
+
+        val customer = user.customer ?: throw ResourceNotFoundException("Customer profile not found!")
 
         val finalPage = if (pageable.sort.isUnsorted) {
             PageRequest.of(pageable.pageNumber, pageable.pageSize, Sort.by(Sort.Direction.DESC, "createdAt"))
         } else pageable
 
-        val accounts = user.bankAccounts
+        val accounts = customer.bankAccounts
         if (accounts.isEmpty()) return emptyList()
 
         val transactions: Page<Transaction> =

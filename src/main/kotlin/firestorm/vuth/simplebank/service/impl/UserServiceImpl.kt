@@ -6,9 +6,9 @@ import firestorm.vuth.simplebank.model.CustomUserDetails
 import firestorm.vuth.simplebank.model.User
 import firestorm.vuth.simplebank.repository.UserRepo
 import firestorm.vuth.simplebank.service.UserService
+import firestorm.vuth.simplebank.utils.SecurityUtils
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
@@ -20,18 +20,11 @@ import java.util.UUID
 @Service
 class UserServiceImpl(
     private val userRepo: UserRepo,
+    private val securityUtils: SecurityUtils
 ): UserService, UserDetailsService {
     override fun getAllUsers(pageable: Pageable): List<UserResponse> {
         val users: Page<User> = userRepo.findAll(pageable)
         return users.content.toResponse()
-    }
-
-    override fun currentUser(): UserResponse {
-        val email = SecurityContextHolder.getContext().authentication?.name
-        val user = userRepo.findByEmail(email)
-            ?: throw UsernameNotFoundException("User not found")
-
-        return user.toResponse()
     }
 
     override fun findById(id: UUID): User {
@@ -42,12 +35,12 @@ class UserServiceImpl(
         userRepo.deleteById(id)
     }
 
-    override fun loadUserByUsername(email: String): UserDetails {
-        val user = userRepo.findByEmail(email)
-            ?: throw UsernameNotFoundException("User with email $email not found")
+    override fun loadUserByUsername(username: String): UserDetails {
+        val user = userRepo.findByUsername(username)
+            ?: throw UsernameNotFoundException("User with email $username not found")
         return CustomUserDetails(
             id = user.id,
-            email = user.email,
+            username = user.username,
             password = user.getPassword(),
             authorities = user.roles.map { SimpleGrantedAuthority("ROLE_${it}") },
         )

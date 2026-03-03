@@ -15,8 +15,8 @@ class AuditLog (
     @Id @GeneratedValue(strategy = GenerationType.UUID)
     val id: UUID? = null,
 
-    @Column(name = "user_id", nullable = false)
-    val email: String? = null,
+    @Column(nullable = false)
+    val username: String? = null,
     val action: String? = null,
     val path: String? = null,
     val ip: String? = null,

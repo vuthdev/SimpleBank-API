@@ -1,7 +1,6 @@
 package firestorm.vuth.simplebank.utils
 
 import firestorm.vuth.simplebank.config.JwtProperties
-import firestorm.vuth.simplebank.model.CustomUserDetails
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.JwtException
@@ -47,12 +46,12 @@ class JwtTokenService(
             .compact()
     }
 
-    fun generateRefreshToken(userEmail: String): String {
+    fun generateRefreshToken(username: String): String {
         val now = Date()
         val expiry = Date(now.time + properties.refreshTokenExpireDays.days.toJavaDuration().toMillis())
 
         return Jwts.builder()
-            .subject(userEmail)
+            .subject(username)
             .claim("type", "refresh")
             .issuedAt(now)
             .expiration(expiry)

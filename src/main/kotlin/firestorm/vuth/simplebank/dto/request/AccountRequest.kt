@@ -5,8 +5,5 @@ import java.util.UUID
 
 data class AccountRequest(
     @field:NotBlank
-    var userId: UUID,
-
-    @field:NotBlank
     var currency: String = "USD",
 )

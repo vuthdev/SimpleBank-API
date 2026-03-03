@@ -8,10 +8,11 @@ import firestorm.vuth.simplebank.exception.ResourceNotFoundException
 import firestorm.vuth.simplebank.model.Account
 import firestorm.vuth.simplebank.model.Enum.Currency
 import firestorm.vuth.simplebank.repository.AccountRepo
+import firestorm.vuth.simplebank.repository.CustomerRepo
 import firestorm.vuth.simplebank.repository.UserRepo
 import firestorm.vuth.simplebank.service.AccountService
 import firestorm.vuth.simplebank.utils.BankConfig
-import org.springframework.data.repository.findByIdOrNull
+import firestorm.vuth.simplebank.utils.SecurityUtils
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import java.util.UUID
@@ -20,14 +21,18 @@ import java.util.UUID
 class AccountServiceImpl(
     private val accountRepo: AccountRepo,
     private val userRepo: UserRepo,
+    private val securityUtils: SecurityUtils
 ): AccountService {
     override fun createAccount(request: AccountRequest): AccountDetailResponse {
-        val user = userRepo.findById(request.userId).orElseThrow { ResourceNotFoundException("User does not exist") }
+        val username = securityUtils.getCurrentUsername()
+        val user = userRepo.findByUsername(username)
+            ?: throw ResourceNotFoundException("User does not exist")
 
-        if (user.bankAccounts.size <= BankConfig.MIN_ACCOUNT) throw BusinessRuleException("Account does not belong to user")
+        val customer = user.customer ?: throw ResourceNotFoundException("Customer profile not found")
+        if (customer.bankAccounts.size >= BankConfig.MAX_ACCOUNT_PER_USER) throw BusinessRuleException("You cannot create more than ${BankConfig.MAX_ACCOUNT_PER_USER} accounts!")
 
         val account = Account(
-            user = user,
+            customer = customer,
             currency = Currency.valueOf(request.currency),
         )
 
@@ -40,13 +45,13 @@ class AccountServiceImpl(
     override fun checkAccount(
         accountNumber: Long
     ): AccountDetailResponse {
-        val email = SecurityContextHolder.getContext().authentication?.name
-        val user = userRepo.findByEmail(email)
+        val username = securityUtils.getCurrentUsername()
+        val user = userRepo.findByUsername(username)
             ?: throw ResourceNotFoundException("User does not exist")
         val account = accountRepo.findByAccountNumber(accountNumber)
             ?: throw ResourceNotFoundException("Account does not exist")
 
-        if (account.user?.id == user.id) {
+        if (account.customer?.id == user.customer?.id) {
             return AccountDetailResponse(
                 account.accountNumber,
                 account.balance,
@@ -55,5 +60,18 @@ class AccountServiceImpl(
         } else {
             throw BusinessRuleException("You are not authorized to operate on this account")
         }
+    }
+
+    override fun listAllAccounts(): List<AccountDetailResponse> {
+        val username = securityUtils.getCurrentUsername()
+        val user = userRepo.findByUsername(username)
+            ?: throw ResourceNotFoundException("User does not exist")
+
+        val customer = user.customer ?: throw ResourceNotFoundException("Customer profile not found")
+
+        val accounts = customer.bankAccounts
+        if (accounts.isEmpty()) return emptyList()
+
+        return accounts.toResponse()
     }
 }

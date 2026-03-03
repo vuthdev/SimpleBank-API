@@ -56,10 +56,8 @@ class AdminController(
         val user = userService.findById(id)
         return UserResponse(
             id = user?.id,
-            fullName = user?.firstName + " " + user?.lastName,
-            email = user?.email,
+            username = user?.username,
             roles = user?.roles?.toList(),
-            account = user?.bankAccounts?.map { AccountDetailResponse(it.accountNumber, it.balance, it.currency) },
         )
     }
 }

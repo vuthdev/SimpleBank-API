@@ -1,14 +1,14 @@
 package firestorm.vuth.simplebank.service
 
 import firestorm.vuth.simplebank.model.AuditLog
-import firestorm.vuth.simplebank.repository.AuditLogRepository
+import firestorm.vuth.simplebank.repository.AuditLogRepo
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 
 @Service
 class AuditLogService(
-    private val auditLogRepository: AuditLogRepository,
+    private val auditLogRepository: AuditLogRepo,
 ) {
     companion object {
         private val logger = LoggerFactory.getLogger(javaClass)
@@ -16,7 +16,7 @@ class AuditLogService(
 
     @Async
     fun save(
-        email: String?,
+        username: String?,
         action: String,
         path: String,
         ip: String,
@@ -26,7 +26,7 @@ class AuditLogService(
         try {
             auditLogRepository.save(
                 AuditLog(
-                    email = email,
+                    username = username,
                     action = action,
                     path = path,
                     ip = ip,

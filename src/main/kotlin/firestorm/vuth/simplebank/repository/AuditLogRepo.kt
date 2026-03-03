@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository
 import java.util.UUID
 
 @Repository
-interface AuditLogRepository: JpaRepository<AuditLog, UUID> {
-    fun findByEmailOrderByCreatedAtDesc(email: String): List<AuditLog>
+interface AuditLogRepo: JpaRepository<AuditLog, UUID> {
+    fun findByUsernameOrderByCreatedAtDesc(username: String): List<AuditLog>
     fun findByStatusGreaterThanEqualOrderByCreatedAtDesc(status: Int): List<AuditLog>
 }

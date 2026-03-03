@@ -23,7 +23,7 @@ class WebMvcConfig(
                 "/api/auth/login",
                 "/api/auth/register",
                 "/api/auth/refresh",
-                "/api/user/account/me",
+                "/api/accounts",
                 "/api/admin/**",
                 "/api/transactions",
             )
@@ -31,7 +31,7 @@ class WebMvcConfig(
         registry.addInterceptor(auditTrailInterceptor)
             .addPathPatterns(
                 "/api/transactions/transfer",
-                "/api/user/account"
+                "/api/accounts"
             )
     }
 }

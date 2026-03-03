@@ -14,6 +14,7 @@ import firestorm.vuth.simplebank.repository.UserRepo
 import firestorm.vuth.simplebank.service.BankTransactionService
 import firestorm.vuth.simplebank.service.TransferService
 import firestorm.vuth.simplebank.utils.BankConfig
+import firestorm.vuth.simplebank.utils.SecurityUtils
 import jakarta.transaction.Transactional
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
@@ -23,7 +24,8 @@ import java.math.BigDecimal
 class TransferServiceImpl(
     private val accountRepo: AccountRepo,
     private val bankTransactionService: BankTransactionService,
-    private val userRepo: UserRepo
+    private val userRepo: UserRepo,
+    private val securityUtils: SecurityUtils,
 ): TransferService {
 
     @Transactional
@@ -80,8 +82,8 @@ class TransferServiceImpl(
 
     @Transactional
     override fun transfer(request: TransferRequest): TransactionResponse {
-        val email = SecurityContextHolder.getContext().authentication?.name
-        val user = userRepo.findByEmail(email)
+        val username = securityUtils.getCurrentUsername()
+        val user = userRepo.findByUsername(username)
             ?: throw ResourceNotFoundException("User not found!")
 
         val sender = accountRepo.findByAccountNumber(request.senderAccount)
@@ -94,7 +96,7 @@ class TransferServiceImpl(
         if(request.amount > BigDecimal.valueOf(10000)) throw BusinessRuleException("Cannot transfer more than 10000.")
         if (request.senderAccount == request.receiverAccount)
             throw BusinessRuleException("Cannot transfer to the same account")
-        if(sender.user?.id != user.id) throw BusinessRuleException("Wrong user account!")
+        if(sender.customer?.id != user.customer?.id) throw BusinessRuleException("You don't own this account!")
 
         if(sender.balance >= request.amount) {
             sender.balance = sender.balance.subtract(request.amount)

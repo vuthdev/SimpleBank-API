@@ -1,5 +1,5 @@
 package firestorm.vuth.simplebank.model.Enum
 
 enum class TransactionType {
-    DEPOSIT, WITHDRAW, TRANSFER
+    TRANSFER, WITHDRAW, DEPOSIT, BILL_PAYMENT, TOP_UP, QR_PAYMENT
 }

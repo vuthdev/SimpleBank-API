@@ -12,6 +12,6 @@ import java.util.UUID
 @Repository
 interface UserRepo: JpaRepository<User, UUID> {
     override fun findAll(pageable: Pageable): Page<User>
-    fun findByEmail(email: String?): User?
-    fun existsByEmail(email: String): Boolean
+    fun findByUsername(username: String?): User?
+    fun existsByUsername(username: String): Boolean
 }

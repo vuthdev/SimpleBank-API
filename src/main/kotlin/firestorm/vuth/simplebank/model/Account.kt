@@ -34,8 +34,8 @@ class Account(
     var accountNumber: Long? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    var user: User? = null,
+    @JoinColumn(name = "customer_id", nullable = false)
+    var customer: Customer? = null,
     var balance: BigDecimal = BigDecimal.ZERO,
 
     @Enumerated(EnumType.STRING)
