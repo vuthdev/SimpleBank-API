@@ -45,7 +45,7 @@ class AuthServiceImpl(
             return AuthResponse(
                 accessToken = accessToken,
                 refreshToken = refreshToken,
-                expiresIn = properties.accessTokenExpireMinutes.seconds.inWholeSeconds,
+                expiresIn = properties.accessTokenExpireMinutes.minutes.inWholeSeconds,
                 tokenType = "Bearer",
             )
         } catch (ex: BadCredentialsException) {
@@ -90,7 +90,7 @@ class AuthServiceImpl(
         return AuthResponse(
             accessToken = newAccessToken,
             refreshToken = newRefreshToken,
-            expiresIn = properties.accessTokenExpireMinutes.seconds.inWholeSeconds,
+            expiresIn = properties.accessTokenExpireMinutes.minutes.inWholeSeconds,
             tokenType = "Bearer",
         )
     }
