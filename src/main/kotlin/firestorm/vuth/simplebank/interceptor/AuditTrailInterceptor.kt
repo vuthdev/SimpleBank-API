@@ -4,7 +4,6 @@ import firestorm.vuth.simplebank.service.AuditLogService
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.HandlerInterceptor
 import java.lang.Exception
@@ -25,10 +24,10 @@ class AuditTrailInterceptor(
         ex: Exception?
     ) {
         val duration = System.currentTimeMillis() - request.getAttribute("auditStartTime") as Long
-        val userEmail = getAuthenticatedUserEmail()
+        val email = getAuthenticatedUserEmail()
 
         auditLongService.save(
-            userEmail = userEmail,
+            email = email,
             action = request.method,
             path = request.requestURI,
             ip = request.remoteAddr,
@@ -38,8 +37,6 @@ class AuditTrailInterceptor(
     }
 
     fun getAuthenticatedUserEmail(): String? {
-        val auth = SecurityContextHolder.getContext().authentication
-        val jwt = auth?.credentials as? Jwt ?: return null
-        return jwt.subject
+        return SecurityContextHolder.getContext().authentication?.name
     }
 }

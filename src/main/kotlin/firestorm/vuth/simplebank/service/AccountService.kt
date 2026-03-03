@@ -7,5 +7,5 @@ import java.util.UUID
 interface AccountService {
     fun createAccount(request: AccountRequest): AccountDetailResponse
     fun deleteAccount(accountId: UUID)
-    fun checkAccount(accountNumber: Long, userId: String): AccountDetailResponse
+    fun checkAccount(accountNumber: Long): AccountDetailResponse
 }

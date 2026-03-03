@@ -10,11 +10,13 @@ import org.springframework.stereotype.Service
 class AuditLogService(
     private val auditLogRepository: AuditLogRepository,
 ) {
-    private val logger = LoggerFactory.getLogger(javaClass)
+    companion object {
+        private val logger = LoggerFactory.getLogger(javaClass)
+    }
 
     @Async
     fun save(
-        userEmail: String?,
+        email: String?,
         action: String,
         path: String,
         ip: String,
@@ -24,7 +26,7 @@ class AuditLogService(
         try {
             auditLogRepository.save(
                 AuditLog(
-                    userEmail = userEmail,
+                    email = email,
                     action = action,
                     path = path,
                     ip = ip,

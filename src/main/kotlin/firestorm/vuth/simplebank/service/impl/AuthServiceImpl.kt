@@ -47,7 +47,7 @@ class AuthServiceImpl(
                 tokenType = "Bearer",
             )
         } catch (ex: BadCredentialsException) {
-            throw RuntimeException("Invalid username or password")
+            throw RuntimeException("Invalid email or password")
         } catch (ex: Exception) {
             throw RuntimeException("Authentication error", ex)
         }

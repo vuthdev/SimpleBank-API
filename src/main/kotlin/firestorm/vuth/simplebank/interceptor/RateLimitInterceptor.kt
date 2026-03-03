@@ -5,7 +5,6 @@ import jakarta.servlet.http.HttpServletResponse
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.HandlerInterceptor
 import java.util.concurrent.ConcurrentHashMap
@@ -55,8 +54,6 @@ class RateLimitInterceptor: HandlerInterceptor {
     }
 
     fun getAuthenticatedUserId(): String? {
-        val auth = SecurityContextHolder.getContext().authentication ?: return null
-        val jwt = auth.principal as? Jwt ?: return null
-        return jwt.subject
+        return SecurityContextHolder.getContext().authentication?.name
     }
 }

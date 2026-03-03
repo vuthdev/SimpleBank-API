@@ -10,10 +10,10 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
-import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.stereotype.Service
 import java.util.UUID
 
@@ -26,8 +26,9 @@ class UserServiceImpl(
         return users.content.toResponse()
     }
 
-    override fun currentUser(userId: String): UserResponse {
-        val user = userRepo.findByIdOrNull(UUID.fromString(userId))
+    override fun currentUser(): UserResponse {
+        val email = SecurityContextHolder.getContext().authentication?.name
+        val user = userRepo.findByEmail(email)
             ?: throw UsernameNotFoundException("User not found")
 
         return user.toResponse()
@@ -45,11 +46,10 @@ class UserServiceImpl(
         val user = userRepo.findByEmail(email)
             ?: throw UsernameNotFoundException("User with email $email not found")
         return CustomUserDetails(
-            user.id,
-            user.email,
-            user.getPassword(),
-            user.roles.map { SimpleGrantedAuthority("ROLE_${it}") },
+            id = user.id,
+            email = user.email,
+            password = user.getPassword(),
+            authorities = user.roles.map { SimpleGrantedAuthority("ROLE_${it}") },
         )
     }
-
 }

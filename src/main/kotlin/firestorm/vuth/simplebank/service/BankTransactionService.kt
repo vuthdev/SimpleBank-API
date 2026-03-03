@@ -5,8 +5,6 @@ import firestorm.vuth.simplebank.model.Account
 import firestorm.vuth.simplebank.model.Enum.Currency
 import firestorm.vuth.simplebank.model.Enum.TransactionStatus
 import firestorm.vuth.simplebank.model.Enum.TransactionType
-import firestorm.vuth.simplebank.model.Transaction
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
 
@@ -20,5 +18,5 @@ interface BankTransactionService {
         status: TransactionStatus
     ): TransactionResponse
 
-    fun getTransaction(id: String, pageable: Pageable): List<TransactionResponse>
+    fun getTransaction(pageable: Pageable): List<TransactionResponse>
 }

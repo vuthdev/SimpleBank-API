@@ -2,12 +2,14 @@ package firestorm.vuth.simplebank.utils
 
 import firestorm.vuth.simplebank.config.JwtProperties
 import firestorm.vuth.simplebank.model.CustomUserDetails
+import io.jsonwebtoken.Claims
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.JwtException
 import io.jsonwebtoken.JwtParser
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import org.springframework.security.core.Authentication
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Component
 import java.util.Date
 import java.util.UUID
@@ -29,15 +31,15 @@ class JwtTokenService(
         .build()
 
     fun generateAccessToken(authentication: Authentication): String {
-        val user = authentication.principal as CustomUserDetails
+        val user = authentication.principal as UserDetails
         val now = Date()
         val expiry = Date(now.time + properties.accessTokenExpireMinutes.minutes.toJavaDuration().toMillis())
 
         return Jwts.builder()
-            .subject(user.id.toString())
+            .subject(user.username)
             .claim("roles", user.authorities.mapNotNull { it.authority?.removePrefix("ROLE_") })
             .claim("type", "access")
-            .issuedAt(Date())
+            .issuedAt(now)
             .expiration(expiry)
             .issuer(properties.issuer)
             .id(UUID.randomUUID().toString())
@@ -45,12 +47,12 @@ class JwtTokenService(
             .compact()
     }
 
-    fun generateRefreshToken(userId: String): String {
+    fun generateRefreshToken(userEmail: String): String {
         val now = Date()
         val expiry = Date(now.time + properties.refreshTokenExpireDays.days.toJavaDuration().toMillis())
 
         return Jwts.builder()
-            .subject(userId)
+            .subject(userEmail)
             .claim("type", "refresh")
             .issuedAt(now)
             .expiration(expiry)
@@ -59,6 +61,21 @@ class JwtTokenService(
             .signWith(secret)
             .compact()
     }
+
+    fun isTokenValid(token: String, userDetails: UserDetails): Boolean {
+        val username = extractUsername(token)
+        return username == userDetails.username && !isTokenExpired(token)
+    }
+
+    fun isTokenExpired(token: String): Boolean =
+        extractExpiration(token).before(Date())
+
+    fun extractUsername(token: String): String = extractAllClaims(token).subject
+
+    fun extractExpiration(token: String): Date = extractAllClaims(token).expiration
+
+    fun extractAllClaims(token: String): Claims =
+        parser.parseSignedClaims(token).payload
 
     fun validateRefreshTokenAndGetUsername(authToken: String): String? {
         return try {
@@ -71,6 +88,4 @@ class JwtTokenService(
             null
         }
     }
-
-    val secretKey: SecretKey get() = secret
 }

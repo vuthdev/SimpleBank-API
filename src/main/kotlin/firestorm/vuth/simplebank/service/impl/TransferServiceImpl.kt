@@ -6,7 +6,6 @@ import firestorm.vuth.simplebank.dto.request.WithdrawRequest
 import firestorm.vuth.simplebank.dto.response.TransactionResponse
 import firestorm.vuth.simplebank.exception.BusinessRuleException
 import firestorm.vuth.simplebank.exception.ResourceNotFoundException
-import firestorm.vuth.simplebank.model.Account
 import firestorm.vuth.simplebank.model.Enum.Currency
 import firestorm.vuth.simplebank.model.Enum.TransactionStatus
 import firestorm.vuth.simplebank.model.Enum.TransactionType
@@ -16,12 +15,9 @@ import firestorm.vuth.simplebank.service.BankTransactionService
 import firestorm.vuth.simplebank.service.TransferService
 import firestorm.vuth.simplebank.utils.BankConfig
 import jakarta.transaction.Transactional
-import org.springframework.data.repository.findByIdOrNull
-import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
-import java.util.UUID
 
 @Service
 class TransferServiceImpl(
@@ -83,8 +79,9 @@ class TransferServiceImpl(
     }
 
     @Transactional
-    override fun transfer(userId: String, request: TransferRequest): TransactionResponse {
-        val user = userRepo.findByIdOrNull(UUID.fromString(userId))
+    override fun transfer(request: TransferRequest): TransactionResponse {
+        val email = SecurityContextHolder.getContext().authentication?.name
+        val user = userRepo.findByEmail(email)
             ?: throw ResourceNotFoundException("User not found!")
 
         val sender = accountRepo.findByAccountNumber(request.senderAccount)

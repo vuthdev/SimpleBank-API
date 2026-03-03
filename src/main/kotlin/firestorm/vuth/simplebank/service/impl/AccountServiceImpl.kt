@@ -12,6 +12,7 @@ import firestorm.vuth.simplebank.repository.UserRepo
 import firestorm.vuth.simplebank.service.AccountService
 import firestorm.vuth.simplebank.utils.BankConfig
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import java.util.UUID
 
@@ -37,10 +38,10 @@ class AccountServiceImpl(
         accountRepo.deleteById(accountId)
 
     override fun checkAccount(
-        accountNumber: Long,
-        userId: String
+        accountNumber: Long
     ): AccountDetailResponse {
-        val user = userRepo.findByIdOrNull(UUID.fromString(userId))
+        val email = SecurityContextHolder.getContext().authentication?.name
+        val user = userRepo.findByEmail(email)
             ?: throw ResourceNotFoundException("User does not exist")
         val account = accountRepo.findByAccountNumber(accountNumber)
             ?: throw ResourceNotFoundException("Account does not exist")
