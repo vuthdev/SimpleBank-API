@@ -1,6 +1,5 @@
 package firestorm.vuth.simplebank.mapper
 
-import firestorm.vuth.simplebank.dto.request.CustomerRequest
 import firestorm.vuth.simplebank.dto.response.CustomerResponse
 import firestorm.vuth.simplebank.model.Customer
 

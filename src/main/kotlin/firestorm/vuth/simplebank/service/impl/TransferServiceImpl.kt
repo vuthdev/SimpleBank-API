@@ -16,7 +16,6 @@ import firestorm.vuth.simplebank.service.TransferService
 import firestorm.vuth.simplebank.utils.BankConfig
 import firestorm.vuth.simplebank.utils.SecurityUtils
 import jakarta.transaction.Transactional
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 

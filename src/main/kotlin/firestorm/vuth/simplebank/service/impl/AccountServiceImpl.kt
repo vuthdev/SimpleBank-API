@@ -8,12 +8,10 @@ import firestorm.vuth.simplebank.exception.ResourceNotFoundException
 import firestorm.vuth.simplebank.model.Account
 import firestorm.vuth.simplebank.model.Enum.Currency
 import firestorm.vuth.simplebank.repository.AccountRepo
-import firestorm.vuth.simplebank.repository.CustomerRepo
 import firestorm.vuth.simplebank.repository.UserRepo
 import firestorm.vuth.simplebank.service.AccountService
 import firestorm.vuth.simplebank.utils.BankConfig
 import firestorm.vuth.simplebank.utils.SecurityUtils
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import java.util.UUID
 

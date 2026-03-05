@@ -10,7 +10,6 @@ import firestorm.vuth.simplebank.utils.SecurityUtils
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
@@ -19,8 +18,7 @@ import java.util.UUID
 
 @Service
 class UserServiceImpl(
-    private val userRepo: UserRepo,
-    private val securityUtils: SecurityUtils
+    private val userRepo: UserRepo
 ): UserService, UserDetailsService {
     override fun getAllUsers(pageable: Pageable): List<UserResponse> {
         val users: Page<User> = userRepo.findAll(pageable)

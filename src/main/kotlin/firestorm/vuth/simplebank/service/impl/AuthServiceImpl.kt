@@ -5,10 +5,8 @@ import firestorm.vuth.simplebank.dto.request.LoginRequest
 import firestorm.vuth.simplebank.dto.request.RegisterRequest
 import firestorm.vuth.simplebank.dto.response.ApiResponse
 import firestorm.vuth.simplebank.dto.response.AuthResponse
-import firestorm.vuth.simplebank.model.Account
 import firestorm.vuth.simplebank.model.Customer
 import firestorm.vuth.simplebank.model.User
-import firestorm.vuth.simplebank.repository.AccountRepo
 import firestorm.vuth.simplebank.repository.CustomerRepo
 import firestorm.vuth.simplebank.repository.UserRepo
 import firestorm.vuth.simplebank.service.AuthService
@@ -21,7 +19,6 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import kotlin.time.Duration.Companion.minutes
-import kotlin.time.Duration.Companion.seconds
 
 @Service
 class AuthServiceImpl(
