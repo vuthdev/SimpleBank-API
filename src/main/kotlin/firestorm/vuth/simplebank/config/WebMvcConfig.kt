@@ -26,6 +26,7 @@ class WebMvcConfig(
                 "/api/accounts",
                 "/api/admin/**",
                 "/api/transactions",
+                "/api/customers/me",
             )
 
         registry.addInterceptor(auditTrailInterceptor)

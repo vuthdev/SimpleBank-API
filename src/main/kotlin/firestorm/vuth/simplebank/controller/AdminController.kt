@@ -2,7 +2,6 @@ package firestorm.vuth.simplebank.controller
 
 import firestorm.vuth.simplebank.dto.request.DepositRequest
 import firestorm.vuth.simplebank.dto.request.WithdrawRequest
-import firestorm.vuth.simplebank.dto.response.AccountDetailResponse
 import firestorm.vuth.simplebank.dto.response.TransactionResponse
 import firestorm.vuth.simplebank.dto.response.UserResponse
 import firestorm.vuth.simplebank.service.AccountService
