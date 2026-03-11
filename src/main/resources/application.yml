@@ -25,3 +25,7 @@ jwt:
 cors:
   allowed:
     origin: ${CORS_ALLOWED_ORIGINS}
+
+springdoc:
+  kotlin:
+    enabled: false

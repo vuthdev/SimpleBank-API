@@ -1,6 +1,7 @@
 package firestorm.vuth.simplebank.filter
 
 import firestorm.vuth.simplebank.utils.JwtTokenService
+import io.jsonwebtoken.ExpiredJwtException
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -29,22 +30,32 @@ class JwtAuthenticationFilter(
         }
 
         val jwt = authHeader.substring(7)
-        val username = jwtTokenService.extractUsername(jwt)
-        val authentication = SecurityContextHolder.getContext().authentication
 
-        if (username != null && authentication == null) {
-            val userDetails = userDetailsService.loadUserByUsername(username)
+        try {
+            val username = jwtTokenService.extractUsername(jwt)
+            val authentication = SecurityContextHolder.getContext().authentication
+            if (username != null && authentication == null) {
+                val userDetails = userDetailsService.loadUserByUsername(username)
 
-            if (jwtTokenService.isTokenValid(jwt, userDetails)) {
-                val authToken = UsernamePasswordAuthenticationToken(
-                    userDetails,
-                    null,
-                    userDetails.authorities
-                ).apply {
-                    details = WebAuthenticationDetailsSource().buildDetails(request)
+                if (jwtTokenService.isTokenValid(jwt, userDetails)) {
+                    val authToken = UsernamePasswordAuthenticationToken(
+                        userDetails,
+                        null,
+                        userDetails.authorities
+                    ).apply {
+                        details = WebAuthenticationDetailsSource().buildDetails(request)
+                    }
+                    SecurityContextHolder.getContext().authentication = authToken
                 }
-                SecurityContextHolder.getContext().authentication = authToken
             }
+        } catch (ex: ExpiredJwtException) {
+            response.status = HttpServletResponse.SC_UNAUTHORIZED
+            response.writer.print(ex.message)
+            return
+        } catch (ex: Exception) {
+            response.status = HttpServletResponse.SC_UNAUTHORIZED
+            response.writer.print(ex.message)
+            return
         }
 
         filterChain.doFilter(request, response)

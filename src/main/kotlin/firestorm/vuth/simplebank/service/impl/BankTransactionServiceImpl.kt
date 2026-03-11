@@ -49,7 +49,8 @@ class BankTransactionServiceImpl(
         val user = userRepo.findByUsername(username)
             ?: throw ResourceNotFoundException("User $username not found")
 
-        val customer = user.customer ?: throw ResourceNotFoundException("Customer profile not found!")
+        val customer = user.customer
+            ?: throw ResourceNotFoundException("Customer profile not found!")
 
         val finalPage = if (pageable.sort.isUnsorted) {
             PageRequest.of(pageable.pageNumber, pageable.pageSize, Sort.by(Sort.Direction.DESC, "createdAt"))

@@ -30,6 +30,7 @@ class SecurityConfig(
                 it.requestMatchers("/api/auth/login").permitAll()
                 it.requestMatchers("/api/auth/register").permitAll()
                 it.requestMatchers("/api/auth/refresh").permitAll()
+                it.requestMatchers("/swagger-ui/index.html").permitAll()
                 it.anyRequest().authenticated()
             }
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)

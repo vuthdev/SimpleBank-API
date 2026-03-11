@@ -2,7 +2,6 @@ package firestorm.vuth.simplebank.controller
 
 import firestorm.vuth.simplebank.dto.request.CustomerRequest
 import firestorm.vuth.simplebank.dto.response.CustomerResponse
-import firestorm.vuth.simplebank.model.Customer
 import firestorm.vuth.simplebank.service.CustomerService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
